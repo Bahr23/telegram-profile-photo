@@ -1,6 +1,5 @@
 import json
 import os
-import re
 
 from telegram import Bot
 from telethon import TelegramClient
@@ -19,13 +18,15 @@ class ProfilePhoto():
     def update_photo_file(self, user_id:int) -> bool:
         try:
             photo = self.bot.get_user_profile_photos(user_id).photos
+        
         except:
             return False
+        
         if photo:
             photo = photo[0][1]
         else:
             return False
-        self._download_photo(photo, path=f'{self.photo_dir}/{user_id}.png')
+        self._download_photo(photo, path=f'{self.photo_dir}/{photo.file_id}.png')
         self._update_data_file(user_id, photo.file_id)
         return True
     
@@ -36,6 +37,9 @@ class ProfilePhoto():
     def _update_data_file(self, user_id:int, photo_id:str) -> None:  
         data = self._get_photos_data()
         with open(f'{self.photo_dir}/data.json', 'w+') as f:
+            if str(user_id) in data.keys():
+                os.remove(f'{self.photo_dir}/{data[str(user_id)]}.png')
+            
             data[f'{user_id}'] = photo_id
             json.dump(dict(data), f)
             

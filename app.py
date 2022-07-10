@@ -1,6 +1,4 @@
-
-import flask
-from flask import Flask, request, url_for
+from flask import Flask, request
 
 from profilephoto import ProfilePhotoGetter
 

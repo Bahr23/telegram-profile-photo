@@ -9,12 +9,18 @@ class ProfilePhotoGetter(ProfilePhoto):
       
 
     def get(self, user_id:int) -> str:
-        if not self._check_is_file_exist(user_id):
-            if self.update_photo_file(user_id):
-                return f'{self.photo_dir}/{user_id}.png'
-            else:
-                return None
-        return f'{self.photo_dir}/{user_id}.png'
+        data = self._get_photos_data()
+        result = True
+        if str(user_id) in data.keys():
+            if not self._check_is_file_exist(data[str(user_id)]):
+                result = self.update_photo_file(user_id)
+        else:
+            result = self.update_photo_file(user_id)
+        data = self._get_photos_data()    
+        if result:
+            return f'{self.photo_dir}/{data[str(user_id)]}.png'
+        else:
+            return None
     
-    def _check_is_file_exist(self, user_id:int) -> bool:
-        return os.path.isfile(f'{self.photo_dir}/{user_id}.png')
+    def _check_is_file_exist(self, file_id:str) -> bool:
+        return os.path.isfile(f'{self.photo_dir}/{file_id}.png')
